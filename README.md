@@ -1,6 +1,6 @@
 # SpeedToken 🚀
 
-**The world's fastest BPE tokenizer.** 3–15× faster than `tiktoken` via AVX2 SIMD pretokenization and O(n) doubly-linked BPE merges.
+**A lightspeed BPE tokenizer.** 3–15× faster than `tiktoken` via AVX2 SIMD pretokenization and O(n) doubly-linked BPE merges.
 
 ## 📊 Performance Benchmarks
 
