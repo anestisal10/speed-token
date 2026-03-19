@@ -69,9 +69,15 @@ SpeedToken is validated to be **100% bit-for-bit compatible** with `tiktoken` on
 
 ### Installation
 
+Install directly from source:
+
 ```bash
-pip install speed_token
+git clone https://github.com/anestisal10/speed-token.git
+cd speed-token
+pip install .
 ```
+
+*Note: Requires a Rust toolchain (Cargo) to be installed on your system.*
 
 ### Usage
 
