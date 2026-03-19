@@ -30,31 +30,26 @@
 ## 🛠️ How It Works
 
 ### 1. SIMD Pretokenization
-Uses AVX2 `VPSHUFB` instructions for parallel byte classification. As an alternative to regex matching, we classify 32-byte chunks simultaneously into categories (letters, digits, whitespace, etc.) to identify token boundaries. Native fallbacks are implemented for ARM NEON and scalar processors.
+Parallel pretokenization avoids the overhead of regex back-and-forth by processing 32 bytes at a time using AVX2 `VPSHUFB`. We classify each byte into a "category class" (Letters, Digits, Whitespace, etc.) using a shuffle-based lookup table and then find token boundaries at the transitions between these classes.
 
-```mermaid
-graph LR
-    A[Input Bytes] --> B{AVX2 VPSHUFB}
-    B --> C[Letters Mask]
-    B --> D[Digits Mask]
-    B --> E[Whitespace Mask]
-    C & D & E --> F[Token Boundaries]
-```
+**Example: Pretokenizing "Hi 123!"**
+| Byte | `H` | `i` | ` ` | `1` | `2` | `3` | `!` |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Class** | Letter | Letter | Space | Digit | Digit | Digit | Punct |
+| **Action** | | | **Break** | **Break** | | | **Break** |
+
+Resulting Chunks: `["Hi", " ", "123", "!"]`
 
 ### 2. O(N log V) Doubly-Linked BPE
-Replaces an $O(N^2)$ scan loop with an arena-allocated doubly-linked list coupled with a min-priority queue for merge candidates. This bounds the overhead of each operation, achieving $O(N \log V)$ worst-case behavior (where $V$ is active pairs) across long sequences.
+Instead of re-scanning a buffer after every merge ($O(N^2)$), we maintain the sequence of tokens in an arena-allocated doubly-linked list. A min-priority queue tracks the "highest rank" (most frequent) adjacent pairs. Each merge is performed by splicing the linked list nodes and updating the heap with only the two newly created neighbor pairs.
 
-```mermaid
-sequenceDiagram
-    participant Q as Priority Queue (Ranks)
-    participant L as Doubly-Linked List (Tokens)
-    L->>Q: Push initial pairs
-    loop until Q empty
-        Q->>L: Pop highest rank pair (A, B)
-        L->>L: Merge (A, B) -> C
-        L->>Q: Push new neighbors (prev, C), (C, next)
-    end
-```
+**How it merges `[t, h, e, r, e]`:**
+1. **Initial State**: `t ↔ h ↔ e ↔ r ↔ e` | Heap: `(h,e): rank 100`, `(r,e): rank 80`...
+2. **Merge Event**: Pop `(h,e)` from Heap.
+3. **Update List**: Replace `h` and `e` nodes with a single `he` node: `t ↔ he ↔ r ↔ e`.
+4. **Update Heap**: Add new neighbors `(t,he)` and `(he,r)` to the heap.
+
+This ensures each merge operation takes $O(\log V)$ time relative to the vocabulary size, not the length of the document.
 
 ### 3. Rayon Parallel Batching
 Leverages Rust's Rayon library to parallelize encoding across multiple CPU cores. Each core maintains its own thread-local scratch arena and pair-cache, enabling massive scaling without lock contention.
