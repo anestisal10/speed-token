@@ -8,7 +8,10 @@ def test_correctness():
     if not os.path.exists("data/cl100k_base.tiktoken"):
         print("Downloading vocabs...")
         import subprocess
-        subprocess.run(["python", "python/download_vocabs.py"], check=True)
+        # Find the absolute path of the current file's directory
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        download_script = os.path.join(current_dir, "download_vocabs.py")
+        subprocess.run(["python", download_script], check=True)
 
     # 2. Initialize our tokenizer
     try:

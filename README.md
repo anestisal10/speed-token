@@ -85,7 +85,8 @@ pip install .
 from speed_token import SpeedToken
 
 # Load cl100k_base (GPT-4) vocabulary
-ft = SpeedToken("path/to/cl100k_base.tiktoken", "cl100k_base")
+# Replace this path with your local path to the .tiktoken file
+ft = SpeedToken("data/cl100k_base.tiktoken", "cl100k_base")
 
 # Encode a single string
 tokens = ft.encode("Hello world! 🚀")
@@ -99,6 +100,9 @@ print(bytes_out.decode('utf-8'))
 texts = ["First sentence", "Second sentence", "Third sentence"]
 batch_tokens = ft.encode_batch(texts)
 ```
+
+> [!TIP]
+> You can download vocab files from OpenAI's repository or use the provided `python/download_vocabs.py` script to fetch them automatically.
 
 ## 📜 License
 MIT
