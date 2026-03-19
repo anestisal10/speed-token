@@ -17,10 +17,13 @@
 | | Tiktoken | 4.85 | 1,627,100 |
 | **JSON** | **SpeedToken (MT)** | **30.31** | **21,230,938** |
 | | SpeedToken (ST) | 14.72 | 10,309,400 |
+| | rs-bpe (MT) | 5.47 | 3,834,496 |
 | | rs-bpe (ST) | 7.03 | 4,921,177 |
 | | Tiktoken | 2.09 | 1,461,528 |
 | **Code** | **SpeedToken (MT)** | **29.21** | **9,791,058** |
 | | SpeedToken (ST) | 12.85 | 4,307,746 |
+| | rs-bpe (MT) | 7.51 | 2,517,078 |
+| | rs-bpe (ST) | 9.77 | 3,274,470 |
 | | Tiktoken | 4.12 | 1,380,046 |
 <!-- BENCHMARK_TABLE_END -->
 
