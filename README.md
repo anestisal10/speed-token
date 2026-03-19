@@ -1,4 +1,4 @@
-# SpeedToken
+# SpeedToken 🚀
 
 **A highly-optimized BPE tokenizer.** Designed for high-throughput batch-processing pipelines via SIMD pretokenization and cache-aware doubly-linked BPE merges.
 
