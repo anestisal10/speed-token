@@ -1,0 +1,86 @@
+# ==============================================================
+# speed_token — .gitignore
+# ==============================================================
+
+# --- Rust build output ---
+target/
+# Keep Cargo.lock for binaries; omit for libraries (we are a library)
+Cargo.lock
+
+# --- Python bytecode / packaging ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+MANIFEST
+.installed.cfg
+build/
+dist/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+wheels/
+share/python-wheels/
+sdist/
+parts/
+var/
+lib64/
+
+# --- Compiled extensions & binaries ---
+*.so
+*.pyd
+*.dll
+*.exp
+*.lib
+*.obj
+*.o
+*.pdb
+.Python
+
+# --- Virtual environments ---
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# --- Benchmark data & corpora (large files) ---
+data/
+
+# --- Generated result / report files ---
+*.log
+logs/
+benchmark_report.txt
+results.txt
+
+# --- One-off / scratch scripts (not part of the library API) ---
+rename.py
+generate_corpora.py
+verify_bindings.py
+debug_*.py
+python/debug_*.py
+python/check_*.py
+python/test_*.py
+python/create_corpus.py
+python/download_vocabs.py
+
+# --- Gemini / Antigravity internal files ---
+.gemini/
+
+# --- IDE / editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*.core
+.DS_Store
+Thumbs.db
+progress.md
+
+# --- Windows-specific ---
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
