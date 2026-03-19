@@ -49,6 +49,7 @@ venv.bak/
 
 # --- Benchmark data & corpora (large files) ---
 data/
+!data/*.tiktoken
 
 # --- Generated result / report files ---
 *.log
