@@ -62,10 +62,6 @@ struct Tokenizer {
     size_t vocab_size;
     char pattern[32];
     TokenizerProfile profile;
-    
-    // Thread-local or per-tokenizer scratch space
-    NodeArena arena;
-    MergeHeap heap;
 };
 
 uint32_t hash_bytes(const unsigned char *bytes, size_t len);

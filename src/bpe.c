@@ -18,8 +18,6 @@ void tokenizer_free(Tokenizer *t) {
     }
     free(t->decoder_tokens);
     free(t->decoder_lens);
-    if (t->arena.nodes) free(t->arena.nodes);
-    if (t->heap.entries) free(t->heap.entries);
     free(t);
 }
 
@@ -118,6 +116,22 @@ static inline int32_t get_pair_rank(Tokenizer *t, BNode *left) {
 
 static THREAD_LOCAL NodeArena tl_arena = {NULL, 0, 0};
 static THREAD_LOCAL MergeHeap tl_heap = {NULL, 0, 0};
+
+void tokenizer_thread_free(void) {
+    if (tl_arena.nodes) {
+        free(tl_arena.nodes);
+        tl_arena.nodes = NULL;
+        tl_arena.capacity = 0;
+        tl_arena.count = 0;
+    }
+    if (tl_heap.entries) {
+        free(tl_heap.entries);
+        tl_heap.entries = NULL;
+        tl_heap.capacity = 0;
+        tl_heap.size = 0;
+    }
+    pair_hashmap_free(&tl_cache);
+}
 
 size_t bpe_encode_chunk(Tokenizer *t, const unsigned char *chunk, size_t len, int32_t *out) {
     uint64_t start_total = RDTSC();

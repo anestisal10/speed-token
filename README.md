@@ -1,10 +1,11 @@
-# speed_token 🚀
+# SpeedToken
 
-**The world's fastest BPE tokenizer.** 3–15× faster than `tiktoken` via AVX2 SIMD pretokenization and O(n) doubly-linked BPE merges.
+**A highly-optimized BPE tokenizer.** Designed for high-throughput batch-processing pipelines via SIMD pretokenization and cache-aware doubly-linked BPE merges.
 
 ## 📊 Performance Benchmarks
 
-*Measured on Windows (x86_64, AVX2) using cl100k_base. MT denotes Rayon-parallel batch encoding.*
+*Measured on Windows (x86_64, AVX2, 16 Threads) using cl100k_base. MT denotes Rayon-parallel batch encoding.*
+*Disclaimer: The comparison against `tiktoken` includes Python API boundary overhead. SpeedToken MT processes batches natively across threads, conferring an architectural scaling advantage outside Python's GIL.*
 
 <!-- BENCHMARK_TABLE_START -->
 | Corpus | Method | Throughput (MB/s) | Tokens/sec |
@@ -26,7 +27,7 @@
 ## 🛠️ How It Works
 
 ### 1. SIMD Pretokenization
-Uses AVX2 `VPSHUFB` instructions for ultra-fast parallel byte classification. Instead of slow regex matching, we classify 32 bytes at a time into categories (letters, digits, whitespace, etc.) to identify token boundaries.
+Uses AVX2 `VPSHUFB` instructions for parallel byte classification. As an alternative to regex matching, we classify 32-byte chunks simultaneously into categories (letters, digits, whitespace, etc.) to identify token boundaries. Native fallbacks are implemented for ARM NEON and scalar processors.
 
 ```mermaid
 graph LR
@@ -37,8 +38,8 @@ graph LR
     C & D & E --> F[Token Boundaries]
 ```
 
-### 2. O(n) Doubly-Linked BPE
-Replaces the standard $O(n^2)$ merge loop with a doubly-linked list and a min-priority queue of merge candidates. This ensures each merge operation is $O(1)$ and the total complexity is $O(n)$ relative to the number of input bytes.
+### 2. O(N log V) Doubly-Linked BPE
+Replaces an $O(N^2)$ scan loop with an arena-allocated doubly-linked list coupled with a min-priority queue for merge candidates. This bounds the overhead of each operation, achieving $O(N \log V)$ worst-case behavior (where $V$ is active pairs) across long sequences.
 
 ```mermaid
 sequenceDiagram
@@ -55,7 +56,18 @@ sequenceDiagram
 ### 3. Rayon Parallel Batching
 Leverages Rust's Rayon library to parallelize encoding across multiple CPU cores. Each core maintains its own thread-local scratch arena and pair-cache, enabling massive scaling without lock contention.
 
+## 🔒 Compatibility Guarantee
+
+SpeedToken is validated to be **100% bit-for-bit compatible** with `tiktoken` on `cl100k_base`. The test suite strictly validates consistency regarding complex Unicode edges, lone surrogate extraction, and precise whitespace drops.
+
+## ⚖️ Tradeoffs & Known Limitations
+
+- **Latency vs Throughput**: Optimized primarily for extensive batch-throughput routines. Small or single-string inputs may exhibit higher overhead latency due to thread-pool dispatch costs.
+- **Cache Architecture**: The doubly-linked list strategy accelerates logic complexity but sacrifices spatial data locality (pointer chasing) compared to array compaction strategies.
+- **Initialization**: Spinning up Rayon and allocating localized memory arenas incurs a detectable cold-start cost, demanding persistent processes rather than short-lived functions.
+
 ## 🚀 Quick Start
+
 
 ### Installation
 

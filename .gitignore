@@ -63,7 +63,6 @@ verify_bindings.py
 debug_*.py
 python/debug_*.py
 python/check_*.py
-python/test_*.py
 python/create_corpus.py
 python/download_vocabs.py
 

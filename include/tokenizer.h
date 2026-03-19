@@ -38,6 +38,9 @@ size_t tokenizer_decode(Tokenizer *t, const int32_t *tokens, size_t num_tokens, 
 void tokenizer_reset_profile(Tokenizer *t);
 TokenizerProfile tokenizer_get_profile(Tokenizer *t);
 
+// Free thread-local memory caches used by this thread
+void tokenizer_thread_free(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -171,11 +171,5 @@ Tokenizer* tokenizer_load(const char *path, const char *pattern) {
     }
     fclose(f);
 
-    // Initialize scratch space
-    t->arena.capacity = 16384;
-    t->arena.nodes = malloc(t->arena.capacity * sizeof(BNode));
-    t->heap.capacity = 16384;
-    t->heap.entries = malloc(t->heap.capacity * sizeof(HeapEntry));
-
     return t;
 }

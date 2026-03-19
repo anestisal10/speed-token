@@ -1,8 +1,7 @@
 import tiktoken
 import time
 import os
-import sys
-from speed_token_bindings import SpeedToken
+import speed_token
 
 CORPUS_PATH = "data/corpus_1gb.txt"
 
@@ -61,9 +60,8 @@ def main():
     print(f"  Tokens/sec: {t_tps:.2f}")
     
     print("\nSpeedToken (C Baseline):")
-    ft = SpeedToken("libspeed_token.dll")
     try:
-        ft.load("data/cl100k_base.tiktoken", "cl100k_base")
+        ft = speed_token.SpeedToken("data/cl100k_base.tiktoken", "cl100k_base")
     except Exception as e:
         print(f"  Failed to load SpeedToken: {e}")
         return
